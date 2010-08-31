@@ -17,7 +17,10 @@
 
 # nothing magical from here on
 
-import pynotify, os, ConfigParser
+import ConfigParser
+import os
+import pynotify
+import re
 
 from sonata.library import library_set_data
 
@@ -103,23 +106,18 @@ def on_song_change(songinfo):
             except:
                 icon = "sonata"
 
-        if icon is "sonata" and music_dir is not None:
-            if art_location is '0':
-                icon = os.path.expanduser('~/.covers/%s-%s.jpg' % (artist, album))
-            else:
-                if art_location is '1':
-                    icon = 'cover.jpg'
-                if art_location is '2':
-                    icon = 'album.jpg'
-                if art_location is '3':
-                    icon = 'folder.jpg'
-                if icon is not "sonata":
-                    icon = '%s/%s/%s' % (music_dir, path, icon)
+        if 'sonata-album.png' in icon:
+            icon = 'sonata'
 
-            if not os.path.isfile(icon):
-                icon = "sonata"
-
-        #icondb, icon = artwork.library_get_album_cover(path,artist,album,100)
+        if icon is 'sonata' and music_dir is not None:
+            song_dir = '%s/%s' % (music_dir, path)
+            # convert path like 'artist/album/CD 2' into 'artist/album'
+            if re.compile(r'(?i)cd\s*\d+').match(os.path.split(song_dir)[1]):
+                song_dir = os.path.split(song_dir)[0]
+            arts = [os.path.join(song_dir, name) for name in 'cover.jpg', 'artwork.jpg', 'album.jpg', 'folder.jpg']
+            arts.append(os.path.expanduser('~/.covers/%s-%s.jpg' % (artist, album)))
+            arts = filter(os.path.isfile, arts)
+            icon = arts and arts[0] or 'sonata'
 
         notify.set_property('body', body)
         notify.set_property('summary', summary)
