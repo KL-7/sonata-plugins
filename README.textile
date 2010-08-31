@@ -1,0 +1,4 @@
+Some plugins I use for Sonata MPD Client:
+* **notify.py** - plugin for notification on song-change with pytnotify forked
+from "launchpad.net/~l3on":https://launchpad.net/~l3on/sonata/sonata-plugins.
+
