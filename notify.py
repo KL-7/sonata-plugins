@@ -24,6 +24,8 @@ import re
 
 from sonata.library import library_set_data
 
+cur_songinfo = None
+
 # this gets called when the plugin is loaded, enabled, or disabled:
 def on_enable(state):
     global notify, art_cache, art_location, music_dir
@@ -63,6 +65,11 @@ def on_enable(state):
 
 # this gets called when a new song is playing:
 def on_song_change(songinfo):
+    global cur_songinfo
+    if songinfo == cur_songinfo:
+        return
+    else:
+        cur_songinfo = songinfo
     if songinfo:
         art_folder = ''
         summary = "Current song:"
